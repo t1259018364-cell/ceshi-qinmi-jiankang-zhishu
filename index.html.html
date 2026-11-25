@@ -1,0 +1,607 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="color-scheme" content="light dark" />
+<link rel="icon" href="data:," />
+<title>测测你的亲密关系健康指数</title>
+<style>
+  :root{
+    color-scheme: light dark;
+    --bg:#fdf3f5;
+    --bg-soft:#fce8ed;
+    --card:#ffffff;
+    --card-2:#fff7f9;
+    --ink:#3d2b30;
+    --ink-2:#6f565e;
+    --ink-3:#967a83;
+    --line:#f0d3da;
+    --line-2:#e8bcc7;
+    --accent:#c2516e;
+    --accent-dark:#a83e58;
+    --accent-soft:#fbe3e9;
+    --accent-soft2:#f7ccd6;
+    --ok:#2e7d5b;
+    --ok-bg:#e3f2ea;
+    --bad:#b3382e;
+    --bad-bg:#fbe7e3;
+    --gold:#9a6b1f;
+    --gold-bg:#faf0d7;
+    --shadow:0 10px 30px rgba(168,62,88,.10), 0 2px 8px rgba(168,62,88,.06);
+    --radius:18px;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#24181c;
+      --bg-soft:#2e1e23;
+      --card:#332228;
+      --card-2:#3a272e;
+      --ink:#f6e8ec;
+      --ink-2:#d8b9c1;
+      --ink-3:#b08f9a;
+      --line:#4d333c;
+      --line-2:#63414d;
+      --accent:#e88aa3;
+      --accent-dark:#f0a3b8;
+      --accent-soft:#452a33;
+      --accent-soft2:#54333e;
+      --ok:#7fc9a4;
+      --ok-bg:#22382e;
+      --bad:#f0958a;
+      --bad-bg:#422723;
+      --gold:#e3c07a;
+      --gold-bg:#3d3420;
+      --shadow:0 10px 30px rgba(0,0,0,.35);
+    }
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    margin:0;
+    background:
+      radial-gradient(900px 420px at 85% -60px, var(--bg-soft) 0%, transparent 60%),
+      radial-gradient(700px 380px at -10% 30%, var(--bg-soft) 0%, transparent 55%),
+      var(--bg);
+    color:var(--ink);
+    font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans SC",system-ui,-apple-system,"Segoe UI",sans-serif;
+    line-height:1.65;
+    min-height:100vh;
+  }
+  button,[role="button"]{min-height:44px}
+  .wrap{max-width:760px;margin:0 auto;padding:20px 16px 56px}
+  /* ---------- 通用 ---------- */
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+  .hidden{display:none !important}
+  .btn{
+    appearance:none;border:0;cursor:pointer;font:inherit;font-weight:700;
+    border-radius:999px;padding:12px 26px;min-height:48px;
+    background:var(--accent);color:#fff;letter-spacing:.02em;
+    transition:transform .12s ease, background .15s ease, box-shadow .15s ease;
+    box-shadow:0 6px 16px rgba(194,81,110,.28);
+  }
+  .btn:hover{background:var(--accent-dark)}
+  .btn:active{transform:scale(.98)}
+  .btn.ghost{background:transparent;color:var(--accent);border:1.5px solid var(--line-2);box-shadow:none}
+  .btn.ghost:hover{border-color:var(--accent);background:var(--accent-soft)}
+  .btn:disabled{opacity:.45;cursor:not-allowed;box-shadow:none}
+  /* ---------- 首页 ---------- */
+  .hero{padding:34px 26px 28px;text-align:center;position:relative;overflow:hidden}
+  .hero::before{
+    content:"";position:absolute;inset:0 0 auto 0;height:6px;
+    background:linear-gradient(90deg,var(--accent-soft2),var(--accent),var(--accent-soft2));
+  }
+  .age-badge{
+    display:inline-flex;align-items:center;gap:7px;
+    background:var(--accent-soft);color:var(--accent-dark);
+    border:1px solid var(--line-2);
+    font-size:13px;font-weight:700;padding:6px 14px;border-radius:999px;
+  }
+  .age-badge .dot{width:7px;height:7px;border-radius:50%;background:var(--accent)}
+  h1{font-size:clamp(26px,6vw,36px);line-height:1.3;margin:18px 0 10px;font-weight:800;letter-spacing:.01em}
+  .hero p.lead{color:var(--ink-2);font-size:15.5px;margin:0 auto;max-width:520px}
+  .hero-stats{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin:22px 0 4px}
+  .stat{background:var(--card-2);border:1px solid var(--line);border-radius:14px;padding:10px 16px;min-width:96px}
+  .stat b{display:block;font-size:20px;color:var(--accent-dark);line-height:1.2}
+  .stat span{font-size:12.5px;color:var(--ink-3)}
+  .cats{padding:22px 22px 8px;margin-top:16px}
+  .cats h2,.how h2,.panel h2{font-size:17px;margin:0 0 4px}
+  .cats .sub,.how .sub{color:var(--ink-3);font-size:13.5px;margin:0 0 14px}
+  .cat-row{display:flex;gap:12px;padding:13px 2px;border-top:1px dashed var(--line)}
+  .cat-row:first-of-type{border-top:0}
+  .cat-num{
+    flex:0 0 auto;width:38px;height:38px;border-radius:12px;
+    background:var(--accent-soft);color:var(--accent-dark);
+    display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;
+  }
+  .cat-row h3{margin:0;font-size:15.5px}
+  .cat-row p{margin:2px 0 0;color:var(--ink-2);font-size:13.5px}
+  .cat-row .n{margin-left:auto;flex:0 0 auto;color:var(--ink-3);font-size:13px;padding-top:8px;white-space:nowrap}
+  .how{padding:22px;margin-top:16px}
+  .how ol{margin:0;padding-left:20px;color:var(--ink-2);font-size:14.5px}
+  .how li{margin:6px 0}
+  .how li b{color:var(--ink)}
+  .start-zone{text-align:center;margin-top:24px}
+  .start-zone .btn{font-size:17px;padding:14px 44px}
+  .fineprint{color:var(--ink-3);font-size:12.5px;text-align:center;margin:14px auto 0;max-width:520px}
+  /* ---------- 答题 ---------- */
+  .quiz-top{display:flex;align-items:center;gap:12px;margin:6px 2px 12px}
+  .quiz-top .count{font-weight:800;font-size:15px;white-space:nowrap}
+  .quiz-top .count em{font-style:normal;color:var(--accent-dark)}
+  .quiz-top .cat-tag{
+    margin-left:auto;background:var(--accent-soft);color:var(--accent-dark);
+    border:1px solid var(--line-2);font-size:12.5px;font-weight:700;
+    padding:5px 12px;border-radius:999px;white-space:nowrap;
+  }
+  .progress{height:9px;background:var(--accent-soft);border-radius:99px;overflow:hidden;margin-bottom:16px}
+  .progress i{display:block;height:100%;width:0;background:var(--accent);border-radius:99px;transition:width .35s ease}
+  .qcard{padding:24px 22px}
+  .qcard .point{
+    display:inline-block;font-size:12.5px;font-weight:700;color:var(--gold);
+    background:var(--gold-bg);border-radius:8px;padding:4px 10px;margin-bottom:12px;
+  }
+  .qcard h2{font-size:19px;line-height:1.5;margin:0 0 18px;font-weight:700}
+  .opts{display:grid;gap:10px}
+  .opt{
+    appearance:none;font:inherit;text-align:left;cursor:pointer;width:100%;
+    background:var(--card-2);border:1.5px solid var(--line);color:var(--ink);
+    border-radius:14px;padding:13px 15px;min-height:52px;
+    display:flex;gap:11px;align-items:flex-start;font-size:15.5px;line-height:1.55;
+    transition:border-color .12s ease, background .12s ease;
+  }
+  .opt:hover:not(:disabled){border-color:var(--accent);background:var(--accent-soft)}
+  .opt .letter{
+    flex:0 0 auto;width:26px;height:26px;border-radius:50%;margin-top:1px;
+    border:1.5px solid var(--line-2);color:var(--ink-2);
+    display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;background:var(--card);
+  }
+  .opt:disabled{cursor:default;opacity:1}
+  .opt.correct{border-color:var(--ok);background:var(--ok-bg)}
+  .opt.correct .letter{border-color:var(--ok);background:var(--ok);color:#fff}
+  .opt.wrong{border-color:var(--bad);background:var(--bad-bg)}
+  .opt.wrong .letter{border-color:var(--bad);background:var(--bad);color:#fff}
+  .opt.dim{opacity:.55}
+  .explain{
+    margin-top:16px;border-radius:14px;padding:15px 16px;font-size:14.5px;
+    border:1px solid var(--line);background:var(--card-2);display:none;
+  }
+  .explain.show{display:block}
+  .explain .verdict{font-weight:800;font-size:15px;margin-bottom:5px;display:flex;align-items:center;gap:8px}
+  .explain .verdict .pill{font-size:12px;padding:2px 9px;border-radius:99px;color:#fff}
+  .pill.ok{background:var(--ok)} .pill.bad{background:var(--bad)}
+  .explain p{margin:0;color:var(--ink-2)}
+  .explain p b{color:var(--ink)}
+  .quiz-nav{display:flex;gap:10px;margin-top:18px}
+  .quiz-nav .btn{flex:1}
+  .quiz-nav .btn.ghost{flex:0 0 auto}
+  /* ---------- 结果 ---------- */
+  .result-hero{padding:30px 24px 24px;text-align:center}
+  .result-hero .label{color:var(--ink-3);font-size:13.5px;font-weight:700;letter-spacing:.08em}
+  .score-ring{
+    width:158px;height:158px;margin:16px auto 6px;border-radius:50%;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    background:var(--card);
+    border:10px solid var(--accent-soft2);
+    box-shadow:inset 0 0 0 1px var(--line), var(--shadow);
+  }
+  .score-ring b{font-size:52px;line-height:1;color:var(--accent-dark);font-weight:800}
+  .score-ring span{font-size:13px;color:var(--ink-3);margin-top:5px}
+  .level{font-size:21px;font-weight:800;margin:10px 0 6px}
+  .level-desc{color:var(--ink-2);font-size:14.5px;margin:0 auto;max-width:480px}
+  .correct-line{margin-top:12px;color:var(--ink-3);font-size:13.5px}
+  .correct-line b{color:var(--accent-dark)}
+  .panel{padding:22px;margin-top:16px}
+  .panel h2{margin-bottom:14px}
+  .bar-row{margin:13px 0}
+  .bar-row .bar-head{display:flex;justify-content:space-between;font-size:14px;margin-bottom:5px}
+  .bar-row .bar-head b{font-weight:700}
+  .bar-row .bar-head span{color:var(--ink-3);font-size:13px}
+  .bar{height:10px;background:var(--accent-soft);border-radius:99px;overflow:hidden}
+  .bar i{display:block;height:100%;background:var(--accent);border-radius:99px;transition:width .6s ease}
+  .bar i.low{background:var(--bad)} .bar i.mid{background:#d99a3d}
+  .advice{margin:0;padding-left:20px;color:var(--ink-2);font-size:14.5px}
+  .advice li{margin:8px 0}
+  .advice li b{color:var(--ink)}
+  .wrong-list{display:grid;gap:12px}
+  .wrong-item{border:1px solid var(--line);border-radius:14px;padding:14px 15px;background:var(--card-2)}
+  .wrong-item .wq{font-weight:700;font-size:14.5px;margin:0 0 6px}
+  .wrong-item p{margin:3px 0;font-size:13.5px;color:var(--ink-2)}
+  .wrong-item .mine{color:var(--bad)}
+  .wrong-item .right{color:var(--ok);font-weight:700}
+  .all-right{text-align:center;color:var(--ink-2);font-size:14.5px;padding:8px 0 2px}
+  .result-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}
+  .result-actions .btn{flex:1;min-width:150px}
+  .disclaimer{
+    margin-top:16px;font-size:12.5px;color:var(--ink-3);
+    background:var(--card-2);border:1px dashed var(--line-2);border-radius:14px;padding:13px 15px;
+  }
+  footer{margin-top:26px;text-align:center;color:var(--ink-3);font-size:12.5px}
+  @media (max-width:480px){
+    .wrap{padding:14px 12px 44px}
+    .hero{padding:26px 18px 22px}
+    .qcard{padding:20px 16px}
+    .qcard h2{font-size:17.5px}
+    .panel,.cats{padding:18px 16px}
+    .stat{min-width:84px;padding:9px 10px}
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{transition:none !important}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ================= 首页 ================= -->
+  <section id="screen-start">
+    <div class="card hero">
+      <span class="age-badge"><span class="dot"></span>成人健康科普 · 18+</span>
+      <h1>测测你的亲密关系<br>健康指数</h1>
+      <p class="lead">30 道科普问答，答一道学一个知识点。测的不是“经验”，是关键时刻能不能保护自己、尊重对方的知识和态度。</p>
+      <div class="hero-stats">
+        <div class="stat"><b>30</b><span>道题目</span></div>
+        <div class="stat"><b>5</b><span>个知识板块</span></div>
+        <div class="stat"><b>约 6 分钟</b><span>答完出报告</span></div>
+      </div>
+    </div>
+
+    <div class="card cats">
+      <h2>五大板块</h2>
+      <p class="sub">每个板块 6 道题，结尾会单独给出每个板块的得分。</p>
+      <div class="cat-row"><div class="cat-num">1</div><div><h3>生理健康基础</h3><p>月经与排卵、日常清洁、疫苗与定期检查</p></div><span class="n">6 题</span></div>
+      <div class="cat-row"><div class="cat-num">2</div><div><h3>避孕和安全措施</h3><p>安全套、避孕药、紧急补救与常见误区</p></div><span class="n">6 题</span></div>
+      <div class="cat-row"><div class="cat-num">3</div><div><h3>性传播疾病预防</h3><p>传播途径、无症状感染、检测与疫苗</p></div><span class="n">6 题</span></div>
+      <div class="cat-row"><div class="cat-num">4</div><div><h3>同意、界限与拒绝</h3><p>什么才算同意、随时可停、私密影像红线</p></div><span class="n">6 题</span></div>
+      <div class="cat-row"><div class="cat-num">5</div><div><h3>亲密关系沟通</h3><p>谈防护、处理分歧、隐私边界与求助</p></div><span class="n">6 题</span></div>
+    </div>
+
+    <div class="card how">
+      <h2>怎么答</h2>
+      <p class="sub">不用有压力，答错正是学到新知识的时候。</p>
+      <ol>
+        <li>每题选一个你认为<b>最正确</b>的答案，选完立刻揭晓对错。</li>
+        <li>每道题下面都有一段<b>知识点解释</b>，看完再点“下一题”。</li>
+        <li>30 题答完，给出<b>总分（100 分制）</b>、五大板块分项成绩、错题回顾和针对性建议。</li>
+      </ol>
+    </div>
+
+    <div class="start-zone">
+      <button class="btn" id="btn-start" type="button">开始测试</button>
+      <p class="fineprint">本测试面向成年人，仅作健康科普，不能代替医生的诊断和建议。身体有不适或疑问，请到正规医院妇科、泌尿外科或皮肤性病科就诊，也可以拨打当地疾控中心咨询电话。</p>
+    </div>
+  </section>
+
+  <!-- ================= 答题 ================= -->
+  <section id="screen-quiz" class="hidden">
+    <div class="quiz-top">
+      <span class="count">第 <em id="q-now">1</em> / 30 题</span>
+      <span class="cat-tag" id="q-cat">生理健康基础</span>
+    </div>
+    <div class="progress"><i id="q-bar"></i></div>
+    <div class="card qcard">
+      <span class="point" id="q-point">知识点</span>
+      <h2 id="q-text"></h2>
+      <div class="opts" id="q-opts"></div>
+      <div class="explain" id="q-explain">
+        <div class="verdict"><span class="pill ok" id="q-pill">答对了</span><span id="q-verdict-text"></span></div>
+        <p id="q-explain-text"></p>
+      </div>
+      <div class="quiz-nav">
+        <button class="btn ghost" id="btn-quit" type="button">退出重来</button>
+        <button class="btn" id="btn-next" type="button" disabled>先选一个答案</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 结果 ================= -->
+  <section id="screen-result" class="hidden">
+    <div class="card result-hero">
+      <div class="label">你的亲密关系健康指数</div>
+      <div class="score-ring"><b id="r-score">0</b><span>满分 100 分</span></div>
+      <div class="level" id="r-level"></div>
+      <p class="level-desc" id="r-desc"></p>
+      <div class="correct-line" id="r-correct"></div>
+    </div>
+
+    <div class="card panel">
+      <h2>五大板块成绩</h2>
+      <div id="r-bars"></div>
+    </div>
+
+    <div class="card panel">
+      <h2>给你的建议</h2>
+      <ul class="advice" id="r-advice"></ul>
+    </div>
+
+    <div class="card panel" id="r-wrong-panel">
+      <h2>错题回顾</h2>
+      <div class="wrong-list" id="r-wrong"></div>
+    </div>
+
+    <div class="result-actions">
+      <button class="btn ghost" id="btn-review-top" type="button">回到顶部</button>
+      <button class="btn" id="btn-again" type="button">再测一次</button>
+    </div>
+
+    <div class="disclaimer">说明：本测试为成人健康科普，题目和解释依据公开的医学与性健康常识整理，得分只反映本次答题情况，不代表身体健康状况，不能代替检查和诊断。如出现异常出血、持续疼痛、异常分泌物等情况，或发生过无防护的高风险行为，请尽快到正规医疗机构检查；涉及私密影像传播、强迫或暴力时，可保留证据并报警求助。</div>
+  </section>
+
+  <footer>成人健康科普问答 · 纯文字版 · 答题记录只在本页内计算，不会上传</footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var CATS = ["生理健康基础","避孕和安全措施","性传播疾病预防","同意、界限与拒绝","亲密关系沟通"];
+
+  var QUESTIONS = [
+    /* ---------- 板块 1：生理健康基础 ---------- */
+    {cat:0, point:"月经周期怎么算", q:"一个月经周期，是从哪一天算到哪一天？",
+     opts:["从月经干净那天，算到下次来月经","从出血第一天，算到下次出血的前一天","从排卵日，算到下次月经结束","从月经结束，算到下次排卵日"], a:1,
+     ex:"<b>周期从出血第一天开始算</b>，到下一次出血的前一天结束。一般 21～35 天都算正常范围，偶尔提前或推后几天也常见。记录周期能帮你发现异常：比如周期突然大变、经量明显增多或非经期出血，就值得去妇科看看。"},
+    {cat:0, point:"排卵的大致时间", q:"关于排卵，下面哪种说法更准确？",
+     opts:["每次都固定在月经第 14 天，一天不差","大约在下次月经来之前 14 天左右，但会受作息、压力、疾病等影响而波动","只有来月经的人才会排卵，没来月经就一定不会怀孕","排卵时身体一定会有明显感觉，没感觉就是没排卵"], a:1,
+     ex:"排卵大致发生在<b>下次月经前约 14 天</b>，但它很容易被熬夜、压力、生病、体重变化打乱。所以“数日子”只能粗略参考，既不能精确预测排卵，也<b>不能当作可靠的避孕方法</b>。"},
+    {cat:0, point:"私处清洁的正确做法", q:"日常清洁私处，哪种做法是正确的？",
+     opts:["每天用洗液冲洗阴道内部，洗得越干净越健康","用温水清洗外阴即可，不要冲洗阴道内部","用香皂反复搓洗，杀菌更彻底","没什么不舒服就完全不用清洗"], a:1,
+     ex:"阴道本身有<b>自净功能</b>和正常的菌群平衡。用洗液冲洗内部反而会破坏平衡，增加炎症风险。正确做法是<b>每天用温水清洗外阴</b>、勤换内裤；出现瘙痒、异味、分泌物异常时去就医，而不是自己买洗液“洗一洗”。"},
+    {cat:0, point:"出现这些信号要就医", q:"出现下面哪种情况，最应该尽快去医院，而不是先观察或自行用药？",
+     opts:["偶尔一次月经推迟了 3 天","持续下腹疼痛，伴有异常出血或分泌物有明显异味","经期前几天有点乳房胀痛","白带比平时稍微多了一点，没有其他不适"], a:1,
+     ex:"<b>持续疼痛 + 异常出血 / 分泌物异常</b>，可能是炎症、感染或其他疾病的信号，拖延或乱用药会掩盖病情。男性出现排尿疼痛、异常分泌物、溃疡或赘生物同样要及时就医。就诊科室：女性挂妇科，男性挂泌尿外科，怀疑性传播感染可挂皮肤性病科。"},
+    {cat:0, point:"HPV 疫苗常识", q:"关于 HPV 疫苗，下面哪种说法正确？",
+     opts:["只有女性需要打，男性不用管","有过性生活就完全没必要打了","它能预防所覆盖型别的 HPV 感染，越早接种效果越好；打过疫苗仍需定期做宫颈癌筛查","打完疫苗就等于不会得任何妇科疾病"], a:2,
+     ex:"HPV（人乳头瘤病毒）很常见，多数感染会被免疫系统清除，但高危型持续感染与宫颈癌等疾病有关。疫苗<b>预防的是未感染过的型别</b>，有性生活后接种仍有价值，具体听医生建议。注意：<b>疫苗不能替代筛查</b>，有性生活的女性仍应按医生建议定期做宫颈癌筛查。"},
+    {cat:0, point:"定期检查的意义", q:"为什么医生建议有性生活的人定期做性健康方面的检查？",
+     opts:["因为没症状就检查，是医院想多收费","很多感染早期没有症状，不查发现不了；早发现早治疗，也能避免传染给伴侣","只要每年做普通体检就够了，不用单独查","只有换了新伴侣才需要检查，老伴侣不用"], a:1,
+     ex:"不少性传播感染和妇科问题<b>早期毫无感觉</b>，等出现症状时可能已经拖了一段时间。定期检查（如妇科检查、宫颈癌筛查、必要的病原体检测）能早发现、早处理。和固定伴侣也一样：检查是对双方负责，不是“不信任”。"},
+
+    /* ---------- 板块 2：避孕和安全措施 ---------- */
+    {cat:1, point:"既避孕又防病的办法", q:"下面哪种方法能同时做到避孕和降低性传播疾病风险？",
+     opts:["短效口服避孕药","宫内节育器（上环）","全程正确使用外用避孕套（安全套）","结扎手术"], a:2,
+     ex:"短效避孕药、节育器、结扎的避孕效果都很好，但<b>都不防病</b>。只有避孕套能在避孕的同时，隔开体液和部分皮肤接触，显著降低 HIV、梅毒、淋病等感染风险。追求双保险时，常见做法是<b>长效避孕方法 + 避孕套</b>一起用。"},
+    {cat:1, point:"避孕套的正确用法", q:"使用避孕套，哪种做法是正确的？",
+     opts:["快结束时再戴也一样有效","一次戴两个，防护翻倍","从开始接触前就戴上，全程使用，一次用一个，事后检查有无破损","只要没破，就可以洗一洗下次再用"], a:2,
+     ex:"正确用法是：<b>开始前就戴、全程不摘、一次一个、用完即弃</b>。戴两个会互相摩擦更容易破；中途才戴，前面的接触已经失去防护。使用前看有效期和包装是否完好，存放要避开高温和钱包里的长期挤压摩擦。"},
+    {cat:1, point:"不靠谱的避孕法", q:"下面哪种“避孕方法”失败率很高，不值得依赖？",
+     opts:["按说明每天服用短效避孕药","放置宫内节育器","皮下埋植避孕","算“安全期”和体外排精"], a:3,
+     ex:"“安全期”算不准（排卵会波动），体外排精也控制不住——排精前分泌的液体里就可能有精子。两者的<b>实际失败率都不低</b>。真想避孕，请选避孕套、短效避孕药（按时吃）、节育器、皮埋等正规方法，不确定的可以到医院或药店咨询。"},
+    {cat:1, point:"紧急避孕药的定位", q:"关于紧急避孕药，正确的理解是？",
+     opts:["它是一种事后补救措施，越早服用效果越好，不能当作常规避孕反复使用","吃一次可以管一个月","它对身体绝对没影响，可以随便吃","吃了就百分之百不会怀孕"], a:0,
+     ex:"紧急避孕药是<b>无防护或防护失败后的补救</b>，在规定时间内越早用效果越好，但效果不是 100%，也可能引起月经紊乱等反应。它<b>不能替代常规避孕</b>，反复依赖说明常规方法需要调整。用药细节请按说明书，或咨询医生、药师。"},
+    {cat:1, point:"短效避孕药要点", q:"服用短效口服避孕药，最需要注意的是什么？",
+     opts:["想起来才吃，漏一两天没关系","每天按时服用，漏服要按说明书及时补服并采取额外防护；它不能预防性传播疾病","吃药期间就不用做任何检查了","它和紧急避孕药是一回事"], a:1,
+     ex:"短效避孕药靠<b>规律服用</b>维持效果，漏服、迟服都可能让避孕失败。开始服用前最好先咨询医生，确认自己是否适合（比如有血栓风险、某些疾病或吸烟年龄等因素都要评估）。同时记住：它<b>只避孕，不防病</b>。"},
+    {cat:1, point:"防护失败怎么办", q:"如果避孕套破裂或滑脱，第一时间应该怎么做？",
+     opts:["用清水或洗液使劲冲洗，冲干净就没事了","什么都不用做，等下次月经来了再说","尽快咨询医生或药师，评估是否需要紧急避孕，并考虑做性传播感染检测","马上吃抗生素预防一下"], a:2,
+     ex:"冲洗<b>没有避孕或防病作用</b>，乱吃抗生素更不可取。正确做法是<b>尽快（越早越好）咨询医生或药师</b>：评估紧急避孕的必要和时机；如果有感染风险，按医生建议在合适的时间窗做检测。以后可以提前了解附近医院和药店的位置，真出事时不慌。"},
+
+    /* ---------- 板块 3：性传播疾病预防 ---------- */
+    {cat:2, point:"无症状也会传染", q:"关于性传播感染（性病），下面哪句话是对的？",
+     opts:["只要对方看起来干净健康，就肯定没病","很多感染在早期甚至全程没有症状，没症状也可能传染给别人","得了性病一定会有明显的疼痛或溃疡","只有“乱来”的人才会感染，固定伴侣绝对安全"], a:1,
+     ex:"衣原体、HPV、HIV、梅毒早期等都可能<b>毫无症状</b>。“看起来健康”“是固定伴侣”都不能当判断标准。靠谱的做法只有两个：<b>坚持使用避孕套 + 定期检测</b>。检测结果也是有时效的，情况变化后要重新查。"},
+    {cat:2, point:"HIV 的传播途径", q:"下面哪种日常接触会传播 HIV（艾滋病病毒）？",
+     opts:["一起吃饭、共用餐具","握手、拥抱","共用马桶、游泳池","以上都不会；HIV 主要通过性接触、血液和母婴途径传播"], a:3,
+     ex:"HIV 不会通过<b>握手、拥抱、共餐、共用马桶、蚊虫叮咬</b>传播，日常相处不用恐慌和歧视。真正的传播途径是：无防护的性接触、共用注射器等血液暴露、感染母亲的妊娠分娩和哺乳。做好防护、从不共用针具，就能有效预防。"},
+    {cat:2, point:"伴侣查出感染怎么办", q:"伴侣被查出某种性传播感染，正确的做法是？",
+     opts:["只要自己没症状，就不用检查","双方一起就医检查，按医嘱治疗，治疗期间暂停亲密行为或严格做好防护","先分手，其他以后再说","自己偷偷买点药吃，不用告诉对方"], a:1,
+     ex:"性传播感染是<b>两个人的事</b>：一方治疗、另一方不查不治，很容易互相反复传染。正确流程是双方一起检查、按疗程治疗、复查确认，并遵医嘱决定何时恢复亲密行为。互相埋怨没用，一起面对才是对健康负责。"},
+    {cat:2, point:"避孕套防病的边界", q:"为什么说“用了避孕套，也建议定期检查”？",
+     opts:["因为避孕套完全没用","因为避孕套只能覆盖一部分皮肤，像 HPV、疱疹等可通过未覆盖部位的皮肤接触传播，防护不是 100%","因为检查可以代替避孕套","因为医生想多开单子"], a:1,
+     ex:"避孕套能大幅降低风险，但它<b>覆盖不到全部皮肤</b>。HPV、生殖器疱疹等可以通过避孕套未覆盖部位的皮肤黏膜接触传播。所以完整的防护是组合拳：<b>避孕套 + 疫苗（HPV、乙肝）+ 定期检测</b>，缺一不可。"},
+    {cat:2, point:"可以用疫苗预防的", q:"下面哪些感染，可以通过接种疫苗来预防（至少预防其主要型别）？",
+     opts:["HIV 和梅毒","HPV 和乙型肝炎","淋病和衣原体","疱疹和尖锐湿疣全部型别"], a:1,
+     ex:"目前有疫苗可防的是 <b>HPV 和乙肝病毒</b>：HPV 疫苗预防相关型别的感染，乙肝疫苗是预防乙肝最有效的手段（没打过或抗体不足的成年人可以咨询补种）。而 HIV、梅毒、淋病等<b>没有疫苗</b>，只能靠防护和检测。"},
+    {cat:2, point:"高风险后的正确动作", q:"发生无防护的高风险接触后，比较稳妥的做法是？",
+     opts:["上网搜偏方，自己处理","在医生指导下评估 HIV 暴露后阻断（越早越好，一般不晚于 72 小时），并按时间窗做相关检测","等出现症状了再去医院","多喝水多运动，把病毒“排出去”"], a:1,
+     ex:"HIV 暴露后阻断药（PEP）讲究<b>时间窗：越早越好，通常不超过 72 小时</b>，要到定点医院由医生评估开具。同时其他感染也有各自的检测窗口期，医生会安排复查时间。别自己吓自己，也别拖——<b>尽快去正规医院或疾控中心</b>才是正解。"},
+
+    /* ---------- 板块 4：同意、界限与拒绝 ---------- */
+    {cat:3, point:"什么才算“同意”", q:"在亲密行为中，有效的“同意”应该是？",
+     opts:["对方没有明确说“不”，就算同意","以前同意过，这次默认也同意","清醒、自愿、明确表达的同意，并且随时可以收回","喝了酒之后答应的，也算数"], a:2,
+     ex:"同意有四个关键词：<b>清醒、自愿、明确、可撤回</b>。沉默不是同意，犹豫不是同意，醉酒、熟睡、意识不清时给不出有效同意；上一次同意不等于这一次同意，中途任何时候说停，都必须停下来。"},
+    {cat:3, point:"中途说停怎么办", q:"亲密过程中，对方突然说“停，我不想继续了”，正确的做法是？",
+     opts:["哄一哄、劝一劝，继续完成","立刻停下来，确认对方状态，尊重对方的决定","假装没听见，反正快结束了","生气质问对方为什么耍自己"], a:1,
+     ex:"<b>同意可以随时撤回</b>，听到“停”就立刻停，不需要理由，不许讨价还价。对方可能是不舒服、紧张或单纯改变主意了，这都很正常。停下来关心一句“你还好吗”，比任何推进都更体现尊重。"},
+    {cat:3, point:"拒绝防护就是红线", q:"对方说“不用戴套，戴了没感觉”，还反复施压，你应该怎么做？",
+     opts:["妥协一次，应该没事","坚持自己的底线：做好防护是前提，对方不接受，可以拒绝发生","只要对方保证自己健康就行","事后再吃药补救就可以"], a:1,
+     ex:"<b>要不要防护，不是可以被“说服”掉的底线。</b>反复施压本身就是不尊重界限的信号。你完全有权利说“不行”，甚至直接离开。真正尊重你的人，会把你的健康和感受放在自己的“感觉”前面。"},
+    {cat:3, point:"私密影像的红线", q:"关于拍摄和传播私密照片、视频，哪种说法正确？",
+     opts:["情侣之间拍了，就可以发给朋友看","未经本人明确同意，拍摄、保存、传播私密影像都可能违法；收到别人转发的也不要再扩散","分手后发出来“报复”不算大事","只要打码就没问题"], a:1,
+     ex:"私密影像属于高度敏感的个人隐私。<b>未经同意拍摄、传播都可能触犯法律</b>，造成严重伤害；哪怕是别人发你的，也不要转发。如果自己的影像被泄露，保留证据、要求平台删除，并及时报警。最稳妥的原则：<b>不拍、不存、不传</b>。"},
+    {cat:3, point:"怎么拒绝才有效", q:"想拒绝对方的亲密邀约，哪种表达最合适？",
+     opts:["必须编一个生病之类的借口，对方才会信","直接、平静地说“我不想”，不需要理由，也不需要道歉半天","先答应下来，临场再躲开","冷处理，不回消息让对方自己懂"], a:1,
+     ex:"拒绝<b>不需要借口和理由</b>，“我不想”就是完整的句子。表达得越直接清楚，误会越少。同样，当你被拒绝时，也请干脆接受：追问理由、反复纠缠、拿感情施压，都会让“拒绝”变得不安全，破坏信任。"},
+    {cat:3, point:"无法表达同意的情况", q:"下面哪种情况下，不应该发生亲密行为？",
+     opts:["对方明确说愿意，状态清醒","对方喝得站不稳、意识模糊，没法清楚表达意愿","双方刚确认恋爱关系","对方有点害羞，但明确点头答应"], a:1,
+     ex:"醉酒、药物影响、熟睡或意识不清的人<b>无法给出有效同意</b>，这时发生任何亲密行为都可能构成侵害，没有“她/他没反抗”这种借口。正确做法是照顾对方安全，等清醒后再谈。拿不准对方是不是真愿意时，答案就是先停下来问清楚。"},
+
+    /* ---------- 板块 5：亲密关系沟通 ---------- */
+    {cat:4, point:"防护话题怎么谈", q:"“用不用避孕套、要不要一起做检测”这类话题，最好什么时候谈？",
+     opts:["等出了事再谈","在气氛正热的时候随口一提","提前在平静、清醒的时候坦诚沟通，双方一起决定","这种话题太尴尬，永远别提，靠默契"], a:2,
+     ex:"防护和检测是<b>事前议题</b>，要在清醒平静时谈好：用什么方法、谁准备、多久查一次。提前谈不是扫兴，而是让双方都安心。真到了当下才争论，往往一方将就、一方后悔。把这件事谈得越自然，关系反而越成熟。"},
+    {cat:4, point:"需求不一致怎么办", q:"两个人在亲密需求上不一致（比如频率、方式），健康的处理方式是？",
+     opts:["需求高的一方说了算","坦诚说出各自的感受和底线，协商双方都能接受的方式；实在谈不拢，也不能强迫","用冷战逼对方妥协","瞒着对方在外面解决"], a:1,
+     ex:"需求不一致非常普遍，不是谁的错。处理顺序是：<b>先表达、再倾听、后协商</b>——说清自己的感受和不可退让的底线，听懂对方的顾虑，找双方都舒服的中间地带。强迫、冷暴力、威胁分手，都是在消耗关系本身。"},
+    {cat:4, point:"吵架的正确姿势", q:"发生争吵时，哪种做法更有利于解决问题？",
+     opts:["翻旧账，把以前的错一起算","就事论事，情绪太激动时先暂停冷静，之后再继续谈","人身攻击，专挑对方痛处说","摔门而去，几天不联系"], a:1,
+     ex:"有效的沟通是<b>对事不对人</b>：只谈这一件事，不翻旧账、不贴标签、不攻击人格。情绪上头时喊暂停是成熟，不是逃避——但要说好“冷静后什么时候接着谈”，而不是用消失来惩罚对方。"},
+    {cat:4, point:"隐私也是界限", q:"伴侣要求查看你的手机、交出所有社交账号密码，说“爱我就该没秘密”，你怎么看？",
+     opts:["应该的，恋爱就该完全透明","以爱为名的查岗和索要密码是控制，不是亲密；信任不等于交出全部隐私","先给密码，以后再慢慢改回来","那就互相查，谁也别吃亏"], a:1,
+     ex:"亲密关系里<b>依然保留个人隐私和边界</b>：手机、密码、日记、和朋友的聊天，都不必上交。用“爱不爱”来要挟交出隐私，是控制行为的常见话术。健康的关系靠自愿分享建立信任，而不是靠监控维持安全感。"},
+    {cat:4, point:"表达感受的方法", q:"想告诉对方“你这样做让我不舒服”，哪种说法更好？",
+     opts:["“你总是这样，你根本不在乎我！”","“刚才那件事让我有点难受，我希望下次我们能先商量一下。”","什么都不说，憋着，等对方自己发现","在朋友面前吐槽，让朋友去转告"], a:1,
+     ex:"用<b>“我感到……我希望……”</b>的句式，只描述自己的感受和具体需求，不给对方扣帽子。这样说，对方更容易听进去，也不会立刻进入防御和反击。有意见当面、及时、具体地说，是亲密关系里最实用的沟通技巧之一。"},
+    {cat:4, point:"遇到控制和暴力", q:"如果关系中出现威胁、跟踪、限制社交甚至动手，正确的认识是？",
+     opts:["打是亲骂是爱，忍忍就过去了","这不是“脾气不好”，是控制和暴力；安全第一，向可信的亲友、专业机构或警方求助","肯定是自己哪里做得不好，改了就没事了","只要对方事后道歉，就可以当没发生过"], a:1,
+     ex:"<b>任何形式的暴力和控制都不正常，也不该被原谅成“爱”。</b>第一次出现就要认真对待：告诉可信的人、保留证据、制定安全计划，必要时拨打 110 或联系当地妇联（12338）等求助渠道。离开一段危险关系需要支持，这不可耻，求助才是对自己负责。"}
+  ];
+
+  var LETTERS = ["A","B","C","D"];
+  var state = { idx:0, picked:-1, answers:[] };
+
+  var el = function(id){ return document.getElementById(id); };
+  var scrStart = el("screen-start"), scrQuiz = el("screen-quiz"), scrResult = el("screen-result");
+
+  function show(screen){
+    [scrStart, scrQuiz, scrResult].forEach(function(s){ s.classList.add("hidden"); });
+    screen.classList.remove("hidden");
+    window.scrollTo({top:0, behavior:"smooth"});
+  }
+
+  function renderQuestion(){
+    var item = QUESTIONS[state.idx];
+    state.picked = -1;
+    el("q-now").textContent = state.idx + 1;
+    el("q-cat").textContent = CATS[item.cat];
+    el("q-bar").style.width = (state.idx / QUESTIONS.length * 100) + "%";
+    el("q-point").textContent = "知识点 · " + item.point;
+    el("q-text").textContent = item.q;
+    var box = el("q-opts");
+    box.innerHTML = "";
+    item.opts.forEach(function(text, i){
+      var b = document.createElement("button");
+      b.type = "button";
+      b.className = "opt";
+      b.innerHTML = '<span class="letter">' + LETTERS[i] + '</span><span></span>';
+      b.lastChild.textContent = text;
+      b.addEventListener("click", function(){ pick(i); });
+      box.appendChild(b);
+    });
+    el("q-explain").classList.remove("show");
+    var next = el("btn-next");
+    next.disabled = true;
+    next.textContent = "先选一个答案";
+  }
+
+  function pick(i){
+    if (state.picked !== -1) return;
+    state.picked = i;
+    var item = QUESTIONS[state.idx];
+    var correct = (i === item.a);
+    state.answers[state.idx] = { picked:i, correct:correct, cat:item.cat };
+    var opts = el("q-opts").children;
+    for (var k = 0; k < opts.length; k++){
+      opts[k].disabled = true;
+      if (k === item.a) opts[k].classList.add("correct");
+      else if (k === i) opts[k].classList.add("wrong");
+      else opts[k].classList.add("dim");
+    }
+    var pill = el("q-pill");
+    pill.textContent = correct ? "答对了" : "答错了";
+    pill.className = "pill " + (correct ? "ok" : "bad");
+    el("q-verdict-text").textContent = correct ? "这个知识点你掌握了" : ("正确答案是 " + LETTERS[item.a]);
+    el("q-explain-text").innerHTML = item.ex;
+    el("q-explain").classList.add("show");
+    el("q-bar").style.width = ((state.idx + 1) / QUESTIONS.length * 100) + "%";
+    var next = el("btn-next");
+    next.disabled = false;
+    next.textContent = (state.idx === QUESTIONS.length - 1) ? "看我的健康报告" : "下一题";
+  }
+
+  function catScore(cat){
+    var c = 0, t = 0;
+    state.answers.forEach(function(a){ if (a && a.cat === cat){ t++; if (a.correct) c++; } });
+    return { c:c, t:t };
+  }
+
+  function finish(){
+    var totalCorrect = 0;
+    state.answers.forEach(function(a){ if (a && a.correct) totalCorrect++; });
+    var score = Math.round(totalCorrect / QUESTIONS.length * 100);
+    el("r-score").textContent = score;
+
+    var level, desc;
+    if (score >= 90){ level = "健康达人"; desc = "你的亲密关系健康知识非常扎实，防护、同意和沟通都拎得清。把这份清醒保持住，也别忘了把定期检查真正落实到日程上。"; }
+    else if (score >= 75){ level = "稳健可靠"; desc = "大部分关键知识点你都掌握了，个别地方还有小盲区。看看下面的错题回顾，把漏洞补上，你就是伴侣眼里最让人安心的人。"; }
+    else if (score >= 60){ level = "基础合格"; desc = "你有基本的健康意识，但有几个关键知识点还比较模糊——而出问题的往往正是这些地方。认真看一遍错题解释，收获会很大。"; }
+    else { level = "急需补课"; desc = "这次分数不高，说明一些保护自己和尊重对方的关键知识还没建立起来。别灰心，这正是这个测试的意义：把下面每个板块的建议和错题解释看完，再测一次，你会进步很明显。"; }
+    el("r-level").textContent = level;
+    el("r-desc").textContent = desc;
+    el("r-correct").innerHTML = "答对 <b>" + totalCorrect + "</b> / 30 题 · 答错 <b>" + (30 - totalCorrect) + "</b> 题";
+
+    /* 分项条 */
+    var bars = el("r-bars"); bars.innerHTML = "";
+    var catAdvice = [
+      "<b>生理健康基础偏弱：</b>建议把月经周期记录起来，出现持续疼痛、异常出血或分泌物异常别拖、别自行用药，及时去妇科或泌尿外科；HPV、乙肝疫苗和定期筛查也可以提上日程。",
+      "<b>避孕和安全措施偏弱：</b>这是最不能靠运气的一块。记住三点：避孕套要全程正确使用；“安全期”和体外排精不靠谱；短效避孕药要每天按时吃，紧急避孕药只是补救，不能常用。",
+      "<b>性传播疾病预防偏弱：</b>记住“没症状 ≠ 没感染”。坚持用避孕套、定期检测、伴侣双方一起查一起治；发生高风险接触后尽快就医评估，别等症状出现。",
+      "<b>同意与界限偏弱：</b>这一块建议重点补。同意必须是清醒、自愿、明确、随时可撤回的；对方施压、灌酒、拿感情要挟时，停下来就是正确答案；私密影像不拍、不存、不传。",
+      "<b>亲密关系沟通偏弱：</b>防护和检测要在事前平静地谈；有分歧先表达感受、再协商，不用冷战和威胁；隐私被索要、关系出现控制或暴力时，要认真对待并及时求助。"
+    ];
+    var weak = [];
+    CATS.forEach(function(name, ci){
+      var s = catScore(ci);
+      var pct = Math.round(s.c / s.t * 100);
+      var row = document.createElement("div");
+      row.className = "bar-row";
+      var cls = pct < 50 ? "low" : (pct < 84 ? "mid" : "");
+      row.innerHTML = '<div class="bar-head"><b></b><span>' + s.c + ' / ' + s.t + ' 题 · ' + pct + ' 分</span></div><div class="bar"><i class="' + cls + '" style="width:' + pct + '%"></i></div>';
+      row.querySelector("b").textContent = name;
+      bars.appendChild(row);
+      if (pct < 100) weak.push({ ci:ci, pct:pct });
+    });
+
+    /* 建议 */
+    var adv = el("r-advice"); adv.innerHTML = "";
+    var items = [];
+    weak.sort(function(x,y){ return x.pct - y.pct; });
+    weak.slice(0,3).forEach(function(w){ items.push(catAdvice[w.ci]); });
+    items.push("<b>一条通用建议：</b>把“定期检查”变成固定习惯——有性生活后按医生建议做妇科检查、宫颈癌筛查和必要的感染检测，伴侣双方一起做，互相提醒。");
+    items.push("<b>一条通用建议：</b>防护用品提前备好、提前谈好。真正出问题时（破损、滑脱、无防护接触），第一反应是尽快咨询医生或药师，而不是上网搜偏方。");
+    if (score >= 90) items.push("<b>保持住：</b>知识之外，更重要的是每次都做到——全程防护、事前沟通、尊重对方的每一次“不”和“停”。");
+    items.forEach(function(t){
+      var li = document.createElement("li");
+      li.innerHTML = t;
+      adv.appendChild(li);
+    });
+
+    /* 错题回顾 */
+    var wrongBox = el("r-wrong"); wrongBox.innerHTML = "";
+    var wrongCount = 0;
+    QUESTIONS.forEach(function(item, qi){
+      var a = state.answers[qi];
+      if (a && !a.correct){
+        wrongCount++;
+        var div = document.createElement("div");
+        div.className = "wrong-item";
+        div.innerHTML =
+          '<p class="wq">第 ' + (qi+1) + ' 题 · ' + CATS[item.cat] + '</p>' +
+          '<p class="wq" style="font-weight:600"></p>' +
+          '<p class="mine">你的答案：' + LETTERS[a.picked] + '. <span class="mine-t"></span></p>' +
+          '<p>正确答案：<span class="right">' + LETTERS[item.a] + '. </span><span class="right-t"></span></p>' +
+          '<p class="exp-t"></p>';
+        div.querySelectorAll(".wq")[1].textContent = item.q;
+        div.querySelector(".mine-t").textContent = item.opts[a.picked];
+        div.querySelector(".right-t").textContent = item.opts[item.a];
+        div.querySelector(".exp-t").innerHTML = item.ex;
+        wrongBox.appendChild(div);
+      }
+    });
+    if (wrongCount === 0){
+      el("r-wrong-panel").querySelector("h2").textContent = "错题回顾";
+      wrongBox.innerHTML = '<div class="all-right">30 道题全部答对，没有错题。太稳了，记得把知识落到行动上：定期检查、事前沟通、全程防护。</div>';
+    }
+    show(scrResult);
+  }
+
+  el("btn-start").addEventListener("click", function(){
+    state.idx = 0; state.answers = [];
+    renderQuestion();
+    show(scrQuiz);
+  });
+  el("btn-next").addEventListener("click", function(){
+    if (state.picked === -1) return;
+    if (state.idx === QUESTIONS.length - 1){ finish(); }
+    else { state.idx++; renderQuestion(); window.scrollTo({top:0, behavior:"smooth"}); }
+  });
+  el("btn-quit").addEventListener("click", function(){ show(scrStart); });
+  el("btn-again").addEventListener("click", function(){
+    state.idx = 0; state.answers = [];
+    renderQuestion();
+    show(scrQuiz);
+  });
+  el("btn-review-top").addEventListener("click", function(){ window.scrollTo({top:0, behavior:"smooth"}); });
+})();
+</script>
+</body>
+</html>
